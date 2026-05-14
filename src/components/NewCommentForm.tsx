@@ -13,26 +13,22 @@ export const NewCommentForm: React.FC<Props> = ({ post, onAdd }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState('');
   const [body, setBody] = useState('');
-  const [nameError, setNameError] = useState(false);
-  const [emailError, setEmailError] = useState(false);
-  const [bodyError, setBodyError] = useState(false);
+  const [errors, setErrors] = useState({
+    name: false,
+    email: false,
+    body: false,
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!name.trim()) {
-      setNameError(true);
-    }
+    setErrors({
+      name: !name.trim(),
+      email: !email.trim(),
+      body: !body.trim(),
+    });
 
-    if (!email.trim()) {
-      setEmailError(true);
-    }
-
-    if (!body.trim()) {
-      setBodyError(true);
-    }
-
-    if (!name || !email || !body) {
+    if (!name.trim() || !email.trim() || !body.trim()) {
       return;
     }
 
@@ -53,9 +49,7 @@ export const NewCommentForm: React.FC<Props> = ({ post, onAdd }) => {
     setName('');
     setEmail('');
     setBody('');
-    setNameError(false);
-    setEmailError(false);
-    setBodyError(false);
+    setErrors({ name: false, email: false, body: false });
   };
 
   return (
@@ -72,10 +66,10 @@ export const NewCommentForm: React.FC<Props> = ({ post, onAdd }) => {
             name="name"
             id="comment-author-name"
             placeholder="Name Surname"
-            className={classNames('input', { 'is-danger': nameError })}
+            className={classNames('input', { 'is-danger': errors.name })}
             onChange={e => {
               setName(e.target.value);
-              setNameError(false);
+              setErrors(prev => ({ ...prev, name: false }));
             }}
           />
 
@@ -83,7 +77,7 @@ export const NewCommentForm: React.FC<Props> = ({ post, onAdd }) => {
             <i className="fas fa-user" />
           </span>
 
-          {nameError && (
+          {errors.name && (
             <span
               className="icon is-small is-right has-text-danger"
               data-cy="ErrorIcon"
@@ -93,7 +87,7 @@ export const NewCommentForm: React.FC<Props> = ({ post, onAdd }) => {
           )}
         </div>
 
-        {nameError && (
+        {errors.name && (
           <p className="help is-danger" data-cy="ErrorMessage">
             Name is required
           </p>
@@ -112,10 +106,10 @@ export const NewCommentForm: React.FC<Props> = ({ post, onAdd }) => {
             name="email"
             id="comment-author-email"
             placeholder="email@test.com"
-            className={classNames('input', { 'is-danger': emailError })}
+            className={classNames('input', { 'is-danger': errors.email })}
             onChange={e => {
               setEmail(e.target.value);
-              setEmailError(false);
+              setErrors(prev => ({ ...prev, email: false }));
             }}
           />
 
@@ -123,7 +117,7 @@ export const NewCommentForm: React.FC<Props> = ({ post, onAdd }) => {
             <i className="fas fa-envelope" />
           </span>
 
-          {emailError && (
+          {errors.email && (
             <span
               className="icon is-small is-right has-text-danger"
               data-cy="ErrorIcon"
@@ -133,7 +127,7 @@ export const NewCommentForm: React.FC<Props> = ({ post, onAdd }) => {
           )}
         </div>
 
-        {emailError && (
+        {errors.email && (
           <p className="help is-danger" data-cy="ErrorMessage">
             Email is required
           </p>
@@ -151,15 +145,15 @@ export const NewCommentForm: React.FC<Props> = ({ post, onAdd }) => {
             id="comment-body"
             name="body"
             placeholder="Type comment here"
-            className={classNames('input', { 'is-danger': bodyError })}
+            className={classNames('input', { 'is-danger': errors.body })}
             onChange={e => {
               setBody(e.target.value);
-              setBodyError(false);
+              setErrors(prev => ({ ...prev, body: false }));
             }}
           />
         </div>
 
-        {bodyError && (
+        {errors.body && (
           <p className="help is-danger" data-cy="ErrorMessage">
             Enter some text
           </p>

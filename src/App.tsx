@@ -16,10 +16,10 @@ import { Post } from './types/Post';
 export const App = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [postsError, setPostsError] = useState(false);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -27,9 +27,7 @@ export const App = () => {
         const data = await client.get<User[]>('/users');
 
         setUsers(data);
-      } catch {
-        setError(true);
-      }
+      } catch {}
     };
 
     loadUsers();
@@ -41,6 +39,8 @@ export const App = () => {
     }
 
     setSelectedPost(null);
+    setPostsError(false);
+    setPosts([]);
     const loadPosts = async () => {
       try {
         setLoading(true);
@@ -50,7 +50,7 @@ export const App = () => {
 
         setPosts(data);
       } catch {
-        setError(true);
+        setPostsError(true);
       } finally {
         setLoading(false);
       }
@@ -76,7 +76,7 @@ export const App = () => {
 
                 {loading && <Loader />}
 
-                {error && (
+                {postsError && (
                   <div
                     className="notification is-danger"
                     data-cy="PostsLoadingError"
@@ -85,13 +85,19 @@ export const App = () => {
                   </div>
                 )}
 
-                {selectedUser && posts.length === 0 && !loading && !error && (
-                  <div className="notification is-warning" data-cy="NoPostsYet">
-                    No posts yet
-                  </div>
-                )}
+                {selectedUser &&
+                  posts.length === 0 &&
+                  !loading &&
+                  !postsError && (
+                    <div
+                      className="notification is-warning"
+                      data-cy="NoPostsYet"
+                    >
+                      No posts yet
+                    </div>
+                  )}
 
-                {selectedUser && !loading && !error && (
+                {selectedUser && !loading && !postsError && (
                   <PostsList
                     posts={posts}
                     onSelectedPost={setSelectedPost}
